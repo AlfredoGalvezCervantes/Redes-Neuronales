@@ -1,0 +1,57 @@
+using Accord.Neuro;
+using Accord.Neuro.Learning;
+using Accord.Neuro.Networks;
+using Accord.Math;
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Crear un conjunto de datos de entrenamiento XOR
+        double[][] entradas = 
+        {
+            new double[] { 0, 0 },
+            new double[] { 0, 1 },
+            new double[] { 1, 0 },
+            new double[] { 1, 1 }
+        };
+
+        double[][] salidas = 
+        {
+            new double[] { 0 },
+            new double[] { 1 },
+            new double[] { 1 },
+            new double[] { 0 }
+        };
+
+        // Crear una red neuronal multicapa
+        ActivationNetwork red = new ActivationNetwork(
+            new SigmoidFunction(), // Función de activación
+            2,                    // Número de neuronas en la capa de entrada
+            2,                    // Número de neuronas en la capa oculta
+            1                     // Número de neuronas en la capa de salida
+        );
+
+        // Entrenar la red
+        BackPropagationLearning entrenador = new BackPropagationLearning(red);
+        entrenador.LearningRate = 0.1;
+        double error = double.PositiveInfinity;
+        int epoca = 0;
+
+        while (epoca < 10000 && error > 0.001)
+        {
+            error = entrenador.RunEpoch(entradas, salidas);
+            Console.WriteLine("Época: " + epoca + " Error: " + error);
+            epoca++;
+        }
+
+        // Evaluar la red neuronal
+        Console.WriteLine("Evaluación de la red neuronal:");
+        for (int i = 0; i < entradas.Length; i++)
+        {
+            double[] prediccion = red.Compute(entradas[i]);
+            Console.WriteLine("Entrada: " + entradas[i].ToVectorString() + " Predicción: " + prediccion[0]);
+        }
+    }
+}
