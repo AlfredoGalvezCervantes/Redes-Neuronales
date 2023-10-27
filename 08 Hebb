@@ -1,0 +1,82 @@
+using System;
+
+class Neurona
+{
+    private double[] pesos;
+
+    public Neurona(int numEntradas)
+    {
+        pesos = new double[numEntradas];
+        Random rand = new Random();
+
+        for (int i = 0; i < numEntradas; i++)
+        {
+            pesos[i] = rand.NextDouble(); // Inicializar pesos con valores aleatorios
+        }
+    }
+
+    public double Activar(double[] entradas)
+    {
+        if (entradas.Length != pesos.Length)
+            throw new ArgumentException("Número incorrecto de entradas.");
+
+        double sumaPonderada = 0;
+
+        for (int i = 0; i < entradas.Length; i++)
+        {
+            sumaPonderada += entradas[i] * pesos[i];
+        }
+
+        return sumaPonderada >= 0 ? 1 : 0; // Función de activación de Heaviside
+    }
+
+    public void Aprender(double[] entradas, double factorAprendizaje)
+    {
+        for (int i = 0; i < pesos.Length; i++)
+        {
+            pesos[i] += factorAprendizaje * entradas[i];
+        }
+    }
+
+    public double[] GetPesos()
+    {
+        return pesos;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        // Crear una neurona con 2 entradas
+        Neurona neurona = new Neurona(2);
+
+        // Conjunto de datos de ejemplo para entrenar la neurona
+        double[][] datosEntrenamiento = new double[][]
+        {
+            new double[] {1, 1}, // Activar la neurona
+            new double[] {1, 0}, // No activar la neurona
+            new double[] {0, 1}, // No activar la neurona
+            new double[] {0, 0}  // No activar la neurona
+        };
+
+        // Entrenar la neurona utilizando la regla de aprendizaje de Hebb
+        double factorAprendizaje = 0.1;
+
+        foreach (var entrada in datosEntrenamiento)
+        {
+            neurona.Aprender(entrada, factorAprendizaje);
+        }
+
+        // Evaluar la neurona
+        Console.WriteLine("Evaluación de la neurona:");
+        foreach (var entrada in datosEntrenamiento)
+        {
+            double resultado = neurona.Activar(entrada);
+            Console.WriteLine("Entrada: " + string.Join(", ", entrada) + " Resultado: " + resultado);
+        }
+
+        // Mostrar los pesos aprendidos
+        Console.WriteLine("Pesos aprendidos: " + string.Join(", ", neurona.GetPesos()));
+    }
+}
