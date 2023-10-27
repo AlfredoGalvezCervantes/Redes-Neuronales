@@ -1,0 +1,16 @@
+using Accord.Neuro;
+using Accord.Neuro.Learning;
+using Accord.Neuro.Networks;
+using Accord.Math;
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Definir una red neuronal de retropropagación
+        ActivationNetwork network = new ActivationNetwork(
+            new SigmoidFunction(), // Función de activación
+            2,                    // Número de neuronas en la capa de entrada
+            2,                    // Número de neuronas en la capa oculta
+            1                     // Número de neuronas en
