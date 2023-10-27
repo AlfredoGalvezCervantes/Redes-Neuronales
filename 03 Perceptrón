@@ -1,0 +1,80 @@
+using System;
+
+class Perceptron
+{
+    private double[] pesos;
+    private double tasaAprendizaje = 0.1;
+
+    public Perceptron(int numeroEntradas)
+    {
+        // Inicializa los pesos aleatoriamente
+        pesos = new double[numeroEntradas];
+        Random rand = new Random();
+        for (int i = 0; i < numeroEntradas; i++)
+        {
+            pesos[i] = rand.NextDouble() * 2 - 1; // Valores aleatorios entre -1 y 1
+        }
+    }
+
+    public int Activar(double[] entradas)
+    {
+        if (entradas.Length != pesos.Length)
+            throw new ArgumentException("Número incorrecto de entradas.");
+
+        double suma = 0;
+        for (int i = 0; i < entradas.Length; i++)
+        {
+            suma += entradas[i] * pesos[i];
+        }
+
+        int salida = suma > 0 ? 1 : 0;
+        return salida;
+    }
+
+    public void Entrenar(double[][] ejemplos, int[] etiquetas, int epocas)
+    {
+        for (int epoca = 0; epoca < epocas; epoca++)
+        {
+            for (int i = 0; i < ejemplos.Length; i++)
+            {
+                int prediccion = Activar(ejemplos[i]);
+                int error = etiquetas[i] - prediccion;
+                for (int j = 0; j < pesos.Length; j++)
+                {
+                    pesos[j] += tasaAprendizaje * error * ejemplos[i][j];
+                }
+            }
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        double[][] ejemplos = new double[][]
+        {
+            new double[] {0, 0},
+            new double[] {0, 1},
+            new double[] {1, 0},
+            new double[] {1, 1}
+        };
+
+        int[] etiquetas = new int[] {0, 0, 0, 1};
+
+        Perceptron perceptron = new Perceptron(2);
+
+        Console.WriteLine("Pesos iniciales: " + string.Join(", ", perceptron.GetPesos()));
+
+        perceptron.Entrenar(ejemplos, etiquetas, 1000);
+
+        Console.WriteLine("Pesos finales: " + string.Join(", ", perceptron.GetPesos()));
+
+        Console.WriteLine("Predicciones:");
+        for (int i = 0; i < ejemplos.Length; i++)
+        {
+            int prediccion = perceptron.Activar(ejemplos[i]);
+            Console.WriteLine("Entrada: " + string.Join(", ", ejemplos[i]) + " - Predicción: " + prediccion);
+        }
+    }
+}
